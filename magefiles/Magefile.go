@@ -25,7 +25,19 @@ func (Build) Container() error {
 
 // Compiles the binary
 func (Build) Binary() error {
-	return sh.RunV("go", "build", "-o", "build/site", "./cmd")
+	return sh.RunWithV(
+		map[string]string{
+			"CGO_ENABLED": "0",
+			"GOOS":        "linux",
+			"GOARCH":      "amd64",
+		},
+		"go",
+		"build",
+		"-a",
+		"-ldflags", `-w -extldflags "-static"`,
+		"-o", "build/site",
+		"./cmd",
+	)
 }
 
 // Executes tests

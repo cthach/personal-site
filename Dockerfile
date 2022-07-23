@@ -1,6 +1,4 @@
-FROM docker.io/library/golang:1.18-alpine3.16 AS build
-
-RUN apk add git
+FROM docker.io/library/golang:1.18.4-bullseye AS build
 
 # Install mage
 WORKDIR /temp
