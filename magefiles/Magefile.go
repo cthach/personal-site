@@ -7,6 +7,8 @@ import (
 	"github.com/magefile/mage/sh"
 )
 
+const imageName = "docker.io/cthach/personal-site:latest"
+
 // Removes all artifacts
 func Clean() error {
 	return os.RemoveAll("build")
@@ -14,11 +16,12 @@ func Clean() error {
 
 type Build mg.Namespace
 
+// Builds the sites container artifact
 func (Build) Container() error {
 	return sh.RunV(
 		"podman",
 		"build",
-		"-t", "docker.io/cthach/personal-site:latest",
+		"-t", imageName,
 		".",
 	)
 }
@@ -43,4 +46,15 @@ func (Build) Binary() error {
 // Executes tests
 func Test() error {
 	return sh.RunV("go", "test", "./...")
+}
+
+// Pushes the latest container to Docker Hub
+func Publish() error {
+	mg.Deps(Build{}.Container)
+
+	return sh.RunV(
+		"podman",
+		"push",
+		imageName,
+	)
 }
