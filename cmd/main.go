@@ -18,6 +18,8 @@ func main() {
 
 	// TODO: Handle graceful shutdown
 
+	fmt.Printf("http server listening on %s\n", svr.Addr)
+
 	if err := eg.Wait(); err != nil {
 		fmt.Printf("server stopped: %s", err)
 	}

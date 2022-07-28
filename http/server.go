@@ -1,13 +1,17 @@
 package http
 
 import (
-	_ "embed"
+	"embed"
+	"fmt"
+	"io/fs"
 	"net/http"
 	"time"
+
+	"github.com/gorilla/mux"
 )
 
-//go:embed static/index.html
-var content []byte
+//go:embed static
+var content embed.FS
 
 type Server struct {
 	Addr string
@@ -15,16 +19,18 @@ type Server struct {
 }
 
 func (s *Server) ListenAndServe() error {
-	http.HandleFunc(
-		"/",
-		func(w http.ResponseWriter, r *http.Request) {
-			w.Write(content)
-		},
-	)
+	static, err := fs.Sub(content, "static")
+	if err != nil {
+		return fmt.Errorf("get embedded static files subtree: %w", err)
+	}
+
+	r := mux.NewRouter()
+
+	r.PathPrefix("/").Handler(http.FileServer(http.FS(static)))
 
 	s.http = &http.Server{
 		Addr:           s.Addr,
-		Handler:        nil, // Use DefaultServeMux
+		Handler:        r,
 		ReadTimeout:    15 * time.Second,
 		WriteTimeout:   15 * time.Second,
 		MaxHeaderBytes: 1 << 20,
