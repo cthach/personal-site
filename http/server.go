@@ -13,11 +13,13 @@ import (
 //go:embed static
 var content embed.FS
 
+// Server wraps http.Server.
 type Server struct {
 	Addr string
 	http *http.Server
 }
 
+// ListenAndServe will listen and serve on the server address. Blocks until the server is stopped.
 func (s *Server) ListenAndServe() error {
 	static, err := fs.Sub(content, "static")
 	if err != nil {

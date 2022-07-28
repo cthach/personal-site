@@ -14,6 +14,14 @@ func Clean() error {
 	return os.RemoveAll("build")
 }
 
+// Lints Go source
+func Lint() error {
+	return sh.RunV(
+		"golangci-lint",
+		"run",
+	)
+}
+
 type Build mg.Namespace
 
 // Builds the sites container artifact
