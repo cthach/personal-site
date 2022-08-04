@@ -22,15 +22,6 @@ func Lint() error {
 	)
 }
 
-// Starts the development server
-func Start() error {
-	return sh.RunV(
-		"go",
-		"run",
-		"./cmd",
-	)
-}
-
 type Build mg.Namespace
 
 // Builds the sites container artifact

@@ -1,9 +1,11 @@
 package http
 
 import (
+	"context"
 	"embed"
 	"fmt"
 	"io/fs"
+	"net"
 	"net/http"
 	"time"
 
@@ -15,8 +17,8 @@ var content embed.FS
 
 // Server wraps http.Server.
 type Server struct {
-	Addr string
-	http *http.Server
+	Listener net.Listener
+	http     *http.Server
 }
 
 // ListenAndServe will listen and serve on the server address. Blocks until the server is stopped.
@@ -31,12 +33,16 @@ func (s *Server) ListenAndServe() error {
 	r.PathPrefix("/").Handler(http.FileServer(http.FS(static)))
 
 	s.http = &http.Server{
-		Addr:           s.Addr,
 		Handler:        r,
 		ReadTimeout:    15 * time.Second,
 		WriteTimeout:   15 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
 
-	return s.http.ListenAndServe()
+	return s.http.Serve(s.Listener)
+}
+
+// GracefulShutdown will gracefully shutdown the server.
+func (s *Server) GracefulShutdown(ctx context.Context) error {
+	return s.http.Close()
 }
