@@ -27,7 +27,7 @@ type Build mg.Namespace
 // Builds the sites container artifact
 func (Build) Container() error {
 	return sh.RunV(
-		"podman",
+		"docker",
 		"build",
 		"-t", imageName,
 		".",
@@ -61,7 +61,7 @@ func Publish() error {
 	mg.Deps(Build{}.Container)
 
 	return sh.RunV(
-		"podman",
+		"docker",
 		"push",
 		imageName,
 	)
