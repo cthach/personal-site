@@ -1,4 +1,4 @@
-FROM docker.io/library/golang:1.18.4-bullseye AS build
+FROM docker.io/library/golang:1.19.5-bullseye AS build
 
 # Install mage
 WORKDIR /temp
