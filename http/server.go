@@ -32,9 +32,9 @@ func (s *Server) ListenAndServe() error {
 
 	s.http = &http.Server{
 		Handler:        mux,
-		ReadTimeout:    15 * time.Second,
-		WriteTimeout:   15 * time.Second,
-		MaxHeaderBytes: 1 << 20,
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
+		MaxHeaderBytes: http.DefaultMaxHeaderBytes,
 	}
 
 	return s.http.Serve(s.Listener)
