@@ -6,9 +6,8 @@ import (
 	"fmt"
 	"net"
 	"os"
-	"os/signal"
 	"strings"
-	"syscall"
+	"time"
 
 	"golang.org/x/sync/errgroup"
 
@@ -47,8 +46,11 @@ func main() {
 
 	eg.Go(func() error {
 		<-ctx.Done()
-		defer fmt.Println("shutdown gracefully")
-		return svr.GracefulShutdown(context.TODO())
+
+		shutdownCtx, cancel := context.WithTimeout(context.TODO(), 15*time.Second)
+		defer cancel()
+
+		return svr.GracefulShutdown(shutdownCtx)
 	})
 
 	fmt.Printf("http server listening on http://%s\n", lis.Addr().String())
@@ -60,20 +62,5 @@ func main() {
 			code = 1
 			return
 		}
-	}
-}
-
-func handleSignals(ctx context.Context) error {
-	ch := make(chan os.Signal, 2)
-
-	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
-
-	select {
-	case <-ctx.Done():
-		return ctx.Err()
-
-	case sig := <-ch:
-		fmt.Printf("Received: %s\n", sig)
-		return fmt.Errorf("received signal: %s", sig)
 	}
 }

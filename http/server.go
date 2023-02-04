@@ -44,5 +44,5 @@ func (s *Server) ListenAndServe() error {
 
 // GracefulShutdown will gracefully shutdown the server.
 func (s *Server) GracefulShutdown(ctx context.Context) error {
-	return s.http.Close()
+	return s.http.Shutdown(ctx)
 }
