@@ -8,8 +8,6 @@ import (
 	"net"
 	"net/http"
 	"time"
-
-	"github.com/gorilla/mux"
 )
 
 //go:embed static
@@ -28,12 +26,12 @@ func (s *Server) ListenAndServe() error {
 		return fmt.Errorf("get embedded static files subtree: %w", err)
 	}
 
-	r := mux.NewRouter()
+	mux := http.NewServeMux()
 
-	r.PathPrefix("/").Handler(http.FileServer(http.FS(static)))
+	mux.Handle("/", http.FileServer(http.FS(static)))
 
 	s.http = &http.Server{
-		Handler:        r,
+		Handler:        mux,
 		ReadTimeout:    15 * time.Second,
 		WriteTimeout:   15 * time.Second,
 		MaxHeaderBytes: 1 << 20,
