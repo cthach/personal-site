@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 	"time"
 
 	"golang.org/x/sync/errgroup"
@@ -36,11 +38,10 @@ func main() {
 
 	svr := &http.Server{Listener: lis}
 
-	eg, ctx := errgroup.WithContext(context.Background())
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
 
-	eg.Go(func() error {
-		return handleSignals(ctx)
-	})
+	eg, ctx := errgroup.WithContext(ctx)
 
 	eg.Go(svr.ListenAndServe)
 
