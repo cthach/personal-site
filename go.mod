@@ -4,5 +4,5 @@ go 1.19
 
 require (
 	github.com/magefile/mage v1.15.0
-	golang.org/x/sync v0.3.0
+	golang.org/x/sync v0.4.0
 )
